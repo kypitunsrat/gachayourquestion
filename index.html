@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calon S.Kom UNSRAT</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font ceria ala Kahoot -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="top-bar">
+            <!-- Judul Aplikasi Khas UNSRAT -->
+            <div class="title-logo">🎓 Calon S.Kom UNSRAT</div>
+            <div class="stat-badge">Soal Keluar: <span id="answeredCount">0</span></div>
+        </div>
+
+        <div class="main-card">
+            <h2>Pilih Kategori Topik Ujian <span style="font-size: 1.1rem; font-weight: 500; color: #666;">(Bisa pilih lebih dari 1)</span></h2>
+            
+            <div class="button-group" id="categoryContainer">
+                <!-- Tombol kategori dirender dari JavaScript -->
+            </div>
+
+            <!-- Tombol Gacha dengan ikon dadu -->
+            <button id="generateBtn" class="kahoot-btn btn-play" disabled>Gacha Pertanyaan! 🎲</button>
+
+            <div class="question-box">
+                <div class="question-text" id="questionDisplay">Silakan pilih kategori dan tekan tombol untuk memulai ujian!</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
