@@ -136,10 +136,10 @@ const diffConfig = {
 };
 
 // 4. INISIALISASI AUDIO
-const soundRolling = new Audio('rolling.mp3');
+const soundRolling = new Audio('rolling.MP3');
 soundRolling.loop = true; 
 const soundTada = new Audio('tada.mp3');
-const soundVictory = new Audio('victory.mp3');
+const soundVictory = new Audio('victory.MP3');
 
 // 5. Inisialisasi Elemen HTML
 const categoryContainer = document.getElementById('categoryContainer');
