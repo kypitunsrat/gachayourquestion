@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <!-- Font ceria ala Kahoot -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Script Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -17,20 +19,54 @@
             <div class="stat-badge">Soal Keluar: <span id="answeredCount">0</span></div>
         </div>
 
-        <div class="main-card">
-            <h2>Pilih Kategori Topik Ujian <span style="font-size: 1.1rem; font-weight: 500; color: #666;">(Bisa pilih lebih dari 1)</span></h2>
+        <!-- BUNGKUS BARU: MEMBAGI LAYAR KIRI DAN KANAN -->
+        <div class="layout-wrapper">
             
-            <div class="button-group" id="categoryContainer">
-                <!-- Tombol kategori dirender dari JavaScript -->
+            <!-- BAGIAN KIRI: AREA GACHA (Lebih Lebar) -->
+            <div class="gacha-section main-card">
+                <h2>Pilih Kategori Topik Ujian <span style="font-size: 1.1rem; font-weight: 500; color: #666;">(Bisa pilih lebih dari 1)</span></h2>
+                
+                <div class="button-group" id="categoryContainer">
+                    <!-- Tombol kategori dirender dari JavaScript -->
+                </div>
+
+                <!-- Tombol Gacha dengan ikon dadu -->
+                <button id="generateBtn" class="kahoot-btn btn-play" disabled>Gacha Pertanyaan! 🎲</button>
+
+                <div class="question-box">
+                    <div class="question-text" id="questionDisplay">Silakan pilih kategori dan tekan tombol untuk memulai ujian!</div>
+                </div>
             </div>
 
-            <!-- Tombol Gacha dengan ikon dadu -->
-            <button id="generateBtn" class="kahoot-btn btn-play" disabled>Gacha Pertanyaan! 🎲</button>
-
-            <div class="question-box">
-                <div class="question-text" id="questionDisplay">Silakan pilih kategori dan tekan tombol untuk memulai ujian!</div>
+            <!-- BAGIAN KANAN: AREA HISTORY (Lebih Kecil, Punya Kotak Sendiri) -->
+            <div class="history-section main-card">
+                <div class="history-title">📜 Riwayat Pertanyaan Keluar</div>
+                <div class="table-responsive">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">No</th>
+                                <th style="width: 25%;">Kategori</th>
+                                <th style="width: 15%;">Tingkat</th>
+                                <th style="width: 50%;">Pertanyaan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <!-- Baris history akan masuk ke sini melalui JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+
+        </div> <!-- Penutup layout-wrapper -->
+    </div>
+
+    <!-- FITUR: POP-UP OVERLAY (Disembunyikan) -->
+    <div class="popup-overlay" id="skipPopup">
+        <h1 class="popup-title">🎉 JACKPOT! 🎉</h1>
+        <h2 class="popup-subtitle">MAHASISWA DAPAT SKIP!</h2>
+        <p class="popup-desc">Lolos dari pertanyaan di putaran ini 😎</p>
+        <button id="closePopupBtn" class="btn-close-popup">Tutup & Lanjut</button>
     </div>
 
     <script src="app.js"></script>
