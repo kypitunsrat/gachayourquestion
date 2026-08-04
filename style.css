@@ -19,34 +19,36 @@ body {
     font-family: 'Montserrat', sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center; /* Akan menyesuaikan tinggi konten */
+    align-items: center; 
     min-height: 100vh;
     margin: 0;
     padding: 30px 20px;
     box-sizing: border-box;
 }
 
-/* Diperlebar dari 900px menjadi 1400px untuk Widescreen */
-.app-container {
-    max-width: 1400px; 
-    width: 100%;
-}
+.app-container { max-width: 1400px; width: 100%; }
 
+/* =========================================
+   TOP BAR LAYOUT BARU (GRID)
+========================================= */
 .top-bar {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* Kiri, Tengah, Kanan */
     align-items: center;
+    gap: 15px;
     margin-bottom: 25px;
 }
 
 .title-logo {
-    font-size: 2rem;
+    justify-self: center; /* Di tengah */
+    font-size: 2.2rem;
     font-weight: 800;
     color: #0052cc; 
     text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
 }
 
 .stat-badge {
+    justify-self: end; /* Di kanan */
     background-color: #ffffff;
     border: 3px solid var(--gray-light);
     padding: 10px 20px;
@@ -56,74 +58,74 @@ body {
     box-shadow: 0 4px 0 var(--gray-light);
 }
 
-/* =========================================
-   LAYOUT KIRI DAN KANAN (SPLIT SCREEN)
-========================================= */
-.layout-wrapper {
+.user-info {
+    justify-self: start; /* Di kiri */
     display: flex;
-    gap: 25px;
-    align-items: flex-start; /* Agar tinggi kotak kiri & kanan independen */
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #ffffff;
+    border: 3px solid var(--gray-light);
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 0 var(--gray-light);
 }
 
-.gacha-section {
-    flex: 1.7; /* Mengambil sekitar 60-65% layar */
-}
+/* DESAIN BARU UNTUK LABEL MAHASISWA DAN NAMANYA */
+.user-name-container { margin-bottom: 8px; font-size: 1.1rem; }
+.user-label { font-weight: 600; color: #333333; } /* Diubah menjadi warna hitam gelap */
+.user-name-value { font-weight: 800; color: var(--blue); margin-left: 5px; } 
 
-.history-section {
-    flex: 1.1; /* Mengambil sisa layar */
-    max-height: 75vh; /* Jika riwayat panjang, tidak menabrak bawah layar */
-    overflow-y: auto; /* Memunculkan scroll bar di dalam kotak saja */
-}
-
-/* ========================================= */
-
-.main-card {
-    background-color: var(--card-bg);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 0 rgba(0,0,0,0.05);
-}
-
-.gacha-section h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-top: 0;
-    margin-bottom: 25px;
-    color: var(--gray-dark);
-    text-align: center;
-}
-
-.button-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    margin-bottom: 30px;
-}
-
-/* Tombol Kategori Ala Kahoot */
-.cat-btn {
-    background-color: #f2f2f2;
-    color: var(--gray-dark);
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    font-family: 'Montserrat', sans-serif;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #d9d9d9;
-    transition: transform 0.1s, box-shadow 0.1s;
+/* PROGRESS BAR POTONGAN (SEGMEN) */
+.progress-wrapper {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
-.cat-btn:active {
-    transform: translateY(4px);
-    box-shadow: 0 0 0 #d9d9d9;
+.progress-bar-bg {
+    width: 200px;
+    height: 14px;
+    background-color: var(--gray-light);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex; 
 }
 
-/* Warna-warna saat kategori aktif */
+.progress-segment {
+    height: 100%;
+    flex: 1; 
+    border-right: 2px solid white; 
+    transition: background-color 0.3s;
+}
+.progress-segment:last-child { border-right: none; }
+.segment-correct { background-color: var(--green); }
+.segment-wrong { background-color: var(--red); }
+.segment-empty { background-color: transparent; }
+
+.progress-text { font-size: 0.9rem; font-weight: 800; color: var(--gray-dark); }
+
+.diff-indicator {
+    margin-top: 6px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #666;
+}
+
+/* =========================================
+   LAYOUT KIRI DAN KANAN
+========================================= */
+.layout-wrapper { display: flex; gap: 25px; align-items: flex-start; }
+.gacha-section { flex: 1.7; }
+.history-section { flex: 1.1; max-height: 75vh; overflow-y: auto; }
+.main-card { background-color: var(--card-bg); padding: 30px; border-radius: 20px; box-shadow: 0 8px 0 rgba(0,0,0,0.05); }
+.gacha-section h2 { font-size: 1.5rem; font-weight: 700; margin-top: 0; margin-bottom: 25px; text-align: center; }
+
+.button-group { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 30px; }
+
+.cat-btn { background-color: #f2f2f2; color: var(--gray-dark); border: none; padding: 12px 20px; border-radius: 8px; font-size: 0.95rem; font-weight: 700; font-family: 'Montserrat', sans-serif; cursor: pointer; box-shadow: 0 4px 0 #d9d9d9; transition: transform 0.1s, box-shadow 0.1s; }
+.cat-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #d9d9d9; }
+.cat-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .cat-btn.active.color-0 { background-color: var(--red); color: white; box-shadow: 0 4px 0 #b0102b; }
 .cat-btn.active.color-1 { background-color: var(--blue); color: white; box-shadow: 0 4px 0 #0d4a96; }
 .cat-btn.active.color-2 { background-color: var(--green); color: white; box-shadow: 0 4px 0 #1b6308; }
@@ -132,197 +134,62 @@ body {
 .cat-btn.active.color-5 { background-color: var(--orange); color: white; box-shadow: 0 4px 0 #c24e00; }
 .cat-btn.active.color-6 { background-color: var(--teal); color: white; box-shadow: 0 4px 0 #032b7a; }
 
-/* Tombol Utama (Generate) */
-.kahoot-btn {
-    border: none;
-    border-radius: 8px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.1s;
-    display: block;
-    margin: 0 auto;
-}
+/* EFEK HOVER TOMBOL UTAMA */
+.kahoot-btn { border: none; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 800; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s, filter 0.2s; display: block; margin: 0 auto; }
+.btn-play { background-color: var(--green); color: white; font-size: 1.4rem; padding: 18px 30px; width: 100%; max-width: 400px; box-shadow: 0 6px 0 #1b6308; margin-bottom: 30px; }
+.btn-play:not(:disabled):hover { filter: brightness(1.1); }
+.btn-play:not(:disabled):active { transform: translateY(6px); box-shadow: 0 0 0 transparent; }
+.btn-play:disabled { background-color: #cccccc; box-shadow: 0 6px 0 #999999; cursor: not-allowed; color: #666666; }
 
-.btn-play {
-    background-color: var(--green);
-    color: white;
-    font-size: 1.4rem;
-    padding: 18px 30px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 6px 0 #1b6308;
-    margin-bottom: 30px;
-}
+/* EFEK HOVER TOMBOL AKSI BENAR/SALAH */
+.action-buttons { display: flex; gap: 15px; justify-content: center; }
+.action-btn { padding: 15px 30px; font-size: 1.2rem; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; color: white; transition: transform 0.1s, box-shadow 0.1s, filter 0.2s; font-family: 'Montserrat', sans-serif; }
+.btn-benar { background-color: var(--green); box-shadow: 0 5px 0 #1b6308; }
+.btn-salah { background-color: var(--red); box-shadow: 0 5px 0 #b0102b; }
+.action-btn:hover { filter: brightness(1.15); }
+.action-btn:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
 
-.btn-play:not(:disabled):active {
-    transform: translateY(6px);
-    box-shadow: 0 0 0 #1b6308;
-}
+.question-box { background-color: #f8f9fa; border: 4px dashed #ced4da; padding: 40px 25px; border-radius: 15px; min-height: 150px; display: flex; align-items: center; justify-content: center; text-align: center; transition: all 0.3s; }
+.question-text { font-size: 1.5rem; font-weight: 700; line-height: 1.5; color: var(--gray-dark); }
+.gacha-rolling { background-color: var(--yellow); border-color: var(--orange); color: var(--gray-dark); }
+.result-question { background-color: #e0f2fe; border-color: var(--blue); }
+.result-skip { background-color: #dcfce7; border-color: var(--green); }
 
-.btn-play:disabled {
-    background-color: #cccccc;
-    box-shadow: 0 6px 0 #999999;
-    cursor: not-allowed;
-    color: #666666;
-}
+.history-title { font-size: 1.2rem; font-weight: 800; margin-top: 0; margin-bottom: 15px; text-align: center; border-bottom: 2px dashed var(--gray-light); padding-bottom: 15px; }
+.table-responsive { overflow-x: auto; }
+.history-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left; }
+.history-table th, .history-table td { padding: 10px; border-bottom: 1px solid var(--gray-light); }
+.history-table th { font-weight: 700; color: #666; background-color: #fdfdfd; }
+.history-table tr:hover td { background-color: #f9f9f9; }
 
-/* Kotak Pertanyaan */
-.question-box {
-    background-color: #f8f9fa;
-    border: 4px dashed #ced4da;
-    padding: 40px 25px;
-    border-radius: 15px;
-    min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transition: all 0.3s;
-}
+/* MODAL & PLACEHOLDER CUSTOM */
+.popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; text-align: center; }
+.modal-content { background: white; padding: 40px; border-radius: 15px; color: var(--gray-dark); text-align: center; max-width: 550px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.name-input { width: 100%; box-sizing: border-box; padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid var(--gray-light); margin: 20px 0; text-align: center; font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--gray-dark); }
 
-.question-text {
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.5;
-    color: var(--gray-dark);
-}
+/* Styling khusus untuk teks petunjuk (placeholder) */
+.custom-placeholder::placeholder { font-style: italic; color: #999999; opacity: 0.6; font-weight: 500; }
+.custom-placeholder::-webkit-input-placeholder { font-style: italic; color: #999999; opacity: 0.6; font-weight: 500; }
+.custom-placeholder::-moz-placeholder { font-style: italic; color: #999999; opacity: 0.6; font-weight: 500; }
 
-/* Efek Gacha */
-.gacha-rolling {
-    background-color: var(--yellow);
-    border-color: var(--orange);
-    color: var(--gray-dark);
-}
+.popup-title { font-size: 4rem; margin: 0; color: #ffd700; text-shadow: 2px 2px 10px #ffaa00; font-weight: 800; }
+.popup-subtitle { font-size: 2.5rem; margin: 15px 0; font-weight: 700; }
+.popup-desc { font-size: 1.2rem; margin-bottom: 30px; color: #eee; }
+.btn-close-popup { background-color: var(--red); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 6px 0 #b0102b; font-family: 'Montserrat', sans-serif; transition: filter 0.2s; }
+.btn-close-popup:hover { filter: brightness(1.15); }
+.btn-close-popup:active { transform: translateY(6px); box-shadow: 0 0 0 transparent; }
 
-/* Efek Pertanyaan & Skip */
-.result-question {
-    background-color: #e0f2fe; 
-    border-color: var(--blue);
-}
-
-.result-skip {
-    background-color: #dcfce7; 
-    border-color: var(--green);
-}
-
-/* =========================================
-   DESAIN TABEL HISTORY
-========================================= */
-.history-title {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--gray-dark);
-    margin-top: 0;
-    margin-bottom: 15px;
-    text-align: center;
-    border-bottom: 2px dashed var(--gray-light);
-    padding-bottom: 15px;
-}
-
-.table-responsive {
-    overflow-x: auto;
-}
-
-.history-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-    text-align: left;
-}
-
-.history-table th, .history-table td {
-    padding: 10px;
-    border-bottom: 1px solid var(--gray-light);
-}
-
-.history-table th {
-    font-weight: 700;
-    color: #666;
-    background-color: #fdfdfd;
-}
-
-.history-table tr:hover td {
-    background-color: #f9f9f9;
-}
-
-/* =========================================
-   POP-UP OVERLAY
-========================================= */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 9999;
-    display: none; 
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color: white;
-    text-align: center;
-}
-
-.popup-title {
-    font-size: 4rem;
-    margin: 0;
-    color: #ffd700;
-    text-shadow: 2px 2px 10px #ffaa00;
-    font-weight: 800;
-}
-
-.popup-subtitle {
-    font-size: 2.5rem;
-    margin: 15px 0;
-    font-weight: 700;
-}
-
-.popup-desc {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    color: #eee;
-}
-
-.btn-close-popup {
-    background-color: var(--red);
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 6px 0 #b0102b;
-    font-family: 'Montserrat', sans-serif;
-}
-
-.btn-close-popup:active {
-    transform: translateY(6px);
-    box-shadow: 0 0 0 #b0102b;
-}
-
-/* =========================================
-   MOBILE RESPONSIVE (Jika dibuka di HP)
-========================================= */
 @media (max-width: 900px) {
-    .layout-wrapper {
-        flex-direction: column;
-    }
-
-    .history-section {
-        max-height: none; /* Auto height di HP */
-    }
+    .top-bar { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 20px; }
+    .user-info, .stat-badge, .title-logo { justify-self: center; align-items: center; }
+    .layout-wrapper { flex-direction: column; }
+    .history-section { max-height: none; }
 }
-
 @media (max-width: 600px) {
-    .top-bar {
-        flex-direction: column;
-        gap: 10px;
-    }
+    .user-info { width: 100%; box-sizing: border-box; }
     .title-logo { font-size: 1.5rem; }
     .question-text { font-size: 1.2rem; }
     .popup-title { font-size: 3rem; }
     .popup-subtitle { font-size: 1.8rem; }
+    .action-buttons { flex-direction: column; }
 }
