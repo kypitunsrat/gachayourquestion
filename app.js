@@ -1,3 +1,6 @@
+// Paksa input nama selalu kosong saat halaman di-refresh
+document.getElementById('playerNameInput').value = "";
+
 // 1. Database Pertanyaan
 const quizData = {
     "💻 Sistem Informasi": [
@@ -103,6 +106,14 @@ let selectedCategories = new Set();
 let shownQuestions = new Set(); 
 let answeredCount = 0;
 let isGachaRolling = false;
+let isJackpotMode = false;
+
+// --- STATE PROGRESS BARU ---
+let playerName = "";
+let progressStep = 0;
+let correctCount = 0;
+let answerRecords = []; 
+const MAX_STEPS = 4;
 
 // 3. Konfigurasi Desain Tingkat Kesulitan
 const diffConfig = {
@@ -117,21 +128,52 @@ soundRolling.loop = true;
 const soundTada = new Audio('tada.MP3');
 const soundVictory = new Audio('victory.mp3');
 
-// 5. Inisialisasi Elemen Utama HTML
+// 5. Elemen Utama HTML
 const categoryContainer = document.getElementById('categoryContainer');
 const generateBtn = document.getElementById('generateBtn');
+const actionButtons = document.getElementById('actionButtons');
 const questionDisplay = document.getElementById('questionDisplay');
 const answeredCountDisplay = document.getElementById('answeredCount');
 const questionBox = document.querySelector('.question-box');
 const popupOverlay = document.getElementById('skipPopup');
 const historyBody = document.getElementById('historyBody');
+const welcomeModal = document.getElementById('welcomeModal');
+const progressBarContainer = document.getElementById('progressBarContainer');
 
-// Event Listener Tutup Pop-up
-document.getElementById('closePopupBtn').addEventListener('click', () => {
-    popupOverlay.style.display = 'none';
+// FUNGSI KESULITAN BERDASARKAN PROGRESS
+function getRequiredDifficulty() {
+    if (progressStep === 0 || progressStep === 1) return "Easy";
+    if (progressStep === 2) return "Medium";
+    if (progressStep === 3) return "Hard";
+    return "Selesai";
+}
+
+// AWAL MULAI
+document.getElementById('startBtn').addEventListener('click', () => {
+    const inputName = document.getElementById('playerNameInput').value.trim();
+    if (inputName) {
+        playerName = inputName;
+        // Hanya update value namanya saja, karena labelnya dipisah di span
+        document.getElementById('userNameDisplay').innerText = playerName;
+        welcomeModal.style.display = 'none';
+        initProgressBar(); 
+        updateProgressUI(); 
+        checkGenerateButton(); 
+    } else {
+        alert("Silakan masukkan nama lengkap mahasiswa terlebih dahulu!");
+    }
 });
 
-// 6. Render Tombol Kategori
+// TUTUP POPUP JACKPOT (Dihitung Benar)
+document.getElementById('closePopupBtn').addEventListener('click', () => {
+    popupOverlay.style.display = 'none';
+    if (isJackpotMode) {
+        isJackpotMode = false;
+        handleAnswer(true); 
+    }
+});
+
+// 6. KATEGORI BUTTONS
 let colorIndex = 0;
 Object.keys(quizData).forEach(category => {
     const btn = document.createElement('button');
@@ -142,7 +184,7 @@ Object.keys(quizData).forEach(category => {
     colorIndex++;
 
     btn.addEventListener('click', () => {
-        if (isGachaRolling) return; 
+        if (isGachaRolling || progressStep >= MAX_STEPS) return; 
 
         if (selectedCategories.has(category)) {
             selectedCategories.delete(category);
@@ -157,6 +199,8 @@ Object.keys(quizData).forEach(category => {
 });
 
 function checkGenerateButton() {
+    if (progressStep >= MAX_STEPS) return; 
+
     if (selectedCategories.size > 0 && !isGachaRolling) {
         generateBtn.disabled = false;
         generateBtn.innerText = "Gacha Pertanyaan! 🎲"; 
@@ -165,9 +209,7 @@ function checkGenerateButton() {
         if (!isGachaRolling) generateBtn.innerText = "Pilih kategori ujian...";
     }
 }
-checkGenerateButton();
 
-// Fungsi Menjalankan Efek Confetti
 function fireConfetti() {
     if (typeof confetti === 'function') {
         var duration = 3000;
@@ -176,14 +218,12 @@ function fireConfetti() {
         (function frame() {
             confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, zIndex: 10000 });
             confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, zIndex: 10000 });
-            if (Date.now() < end) {
-                requestAnimationFrame(frame);
-            }
+            if (Date.now() < end) requestAnimationFrame(frame);
         }());
     }
 }
 
-// 7. Fungsi Efek Gacha / Roulette
+// 7. EFEK GACHA
 function rollGacha(finalResult) {
     isGachaRolling = true;
     checkGenerateButton(); 
@@ -218,9 +258,7 @@ function rollGacha(finalResult) {
 function finishGacha(finalResult) {
     isGachaRolling = false;
     questionBox.classList.remove('gacha-rolling');
-    
     questionDisplay.innerHTML = finalResult.html;
-    
     soundRolling.pause();
     
     if (finalResult.type === "skip") {
@@ -228,12 +266,10 @@ function finishGacha(finalResult) {
         soundVictory.currentTime = 0;
         soundVictory.play();
         
-        // Tampilkan Pop-up dan Confetti
+        isJackpotMode = true; 
         popupOverlay.style.display = 'flex';
         fireConfetti();
         
-    } else if (finalResult.type === "empty") {
-        questionBox.classList.add('result-question');
     } else {
         questionBox.classList.add('result-question');
         soundTada.currentTime = 0;
@@ -242,7 +278,7 @@ function finishGacha(finalResult) {
         answeredCount++;
         answeredCountDisplay.innerText = answeredCount;
         
-        // Tambahkan ke Tabel History di HTML
+        // Simpan History
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td style="text-align: center;">${answeredCount}</td>
@@ -252,24 +288,26 @@ function finishGacha(finalResult) {
             </td>
             <td>${finalResult.rawText}</td>
         `;
-        historyBody.prepend(tr); // Masukkan di baris paling atas
+        historyBody.prepend(tr);
+        
+        // Munculkan Action Benar/Salah
+        actionButtons.style.display = 'flex';
+        generateBtn.style.display = 'none';
+        document.querySelectorAll('.cat-btn').forEach(b => b.disabled = true);
     }
-    
-    checkGenerateButton(); 
 }
 
-// 8. Event Listener Tombol Generate
+// 8. GENERATE TOMBOL GACHA
 generateBtn.addEventListener('click', () => {
-    if (selectedCategories.size === 0 || isGachaRolling) return;
+    if (selectedCategories.size === 0 || isGachaRolling || progressStep >= MAX_STEPS) return;
 
+    let reqDiff = getRequiredDifficulty();
     let availableQuestions = [];
+    
     selectedCategories.forEach(cat => {
         quizData[cat].forEach(qObj => {
-            if (!shownQuestions.has(qObj.text)) {
-                availableQuestions.push({ 
-                    ...qObj, 
-                    category: cat 
-                });
+            if (!shownQuestions.has(qObj.text) && qObj.diff === reqDiff) {
+                availableQuestions.push({ ...qObj, category: cat });
             }
         });
     });
@@ -277,33 +315,143 @@ generateBtn.addEventListener('click', () => {
     let finalResult = { type: "", html: "", rawText: "", category: "", diff: "" };
     
     if (availableQuestions.length === 0) {
-        finalResult.type = "empty";
-        finalResult.html = "✅ Luar biasa! Semua pertanyaan dari kategori yang dipilih sudah habis dijawab. Silakan ganti kategori lain.";
+        questionBox.className = 'question-box result-question';
+        questionDisplay.innerHTML = `⚠️ <b>Opss!</b> Tidak ada soal tingkat <b>${reqDiff}</b> tersisa di kategori ini. Silakan centang kategori lain!`;
+        return; 
+    } 
+
+    const randomNumber = Math.random(); 
+    
+    if (randomNumber < 0.10) {
+        finalResult.type = "skip";
+        finalResult.html = "🎉 JACKPOT! Anda mendapatkan SKIP pertanyaan di putaran ini 😁";
     } else {
-        const randomNumber = Math.random(); 
+        const randomObj = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+        const config = diffConfig[randomObj.diff];
         
-        if (randomNumber < 0.10) {
-            finalResult.type = "skip";
-            finalResult.html = "🎉 JACKPOT! Anda mendapatkan SKIP pertanyaan di putaran ini 😁";
-        } else {
-            const randomObj = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-            const config = diffConfig[randomObj.diff];
-            
-            finalResult.type = "question";
-            finalResult.rawText = randomObj.text;
-            finalResult.category = randomObj.category;
-            finalResult.diff = randomObj.diff;
-            
-            finalResult.html = `
-                <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase; color: #555;">
-                    TINGKAT KESULITAN: <span style="color: ${config.color};">${config.icon} ${randomObj.diff}</span>
-                </div>
-                ${randomObj.text}
-            `;
-            
-            shownQuestions.add(finalResult.rawText);
-        }
+        finalResult.type = "question";
+        finalResult.rawText = randomObj.text;
+        finalResult.category = randomObj.category;
+        finalResult.diff = randomObj.diff;
+        
+        finalResult.html = `
+            <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase; color: #555;">
+                TINGKAT KESULITAN: <span style="color: ${config.color};">${config.icon} ${randomObj.diff}</span>
+            </div>
+            ${randomObj.text}
+        `;
+        shownQuestions.add(finalResult.rawText);
     }
 
     rollGacha(finalResult);
 });
+
+// ==========================================
+// LOGIKA TOMBOL AKSI BENAR & SALAH
+// ==========================================
+
+document.getElementById('btnBenar').addEventListener('click', () => handleAnswer(true));
+document.getElementById('btnSalah').addEventListener('click', () => handleAnswer(false));
+
+function handleAnswer(isCorrect) {
+    if (progressStep < MAX_STEPS) {
+        if (isCorrect) {
+            correctCount++;
+            answerRecords.push("correct");
+        } else {
+            answerRecords.push("wrong");
+        }
+        
+        progressStep++; 
+        updateProgressUI();
+    }
+    
+    if (progressStep >= MAX_STEPS) {
+        finishExam();
+    } else {
+        resetForNextQuestion();
+    }
+}
+
+function resetForNextQuestion() {
+    actionButtons.style.display = 'none';
+    generateBtn.style.display = 'block';
+    document.querySelectorAll('.cat-btn').forEach(b => b.disabled = false); 
+    
+    questionBox.className = 'question-box';
+    questionDisplay.innerHTML = `Silakan gacha pertanyaan selanjutnya!`;
+    checkGenerateButton();
+}
+
+function initProgressBar() {
+    progressBarContainer.innerHTML = '';
+    for(let i=0; i<MAX_STEPS; i++){
+        const seg = document.createElement('div');
+        seg.className = 'progress-segment segment-empty';
+        progressBarContainer.appendChild(seg);
+    }
+}
+
+function updateProgressUI() {
+    progressBarContainer.innerHTML = '';
+    for(let i=0; i<MAX_STEPS; i++){
+        const seg = document.createElement('div');
+        seg.className = 'progress-segment';
+        
+        if (i < answerRecords.length) {
+            seg.classList.add(answerRecords[i] === 'correct' ? 'segment-correct' : 'segment-wrong');
+        } else {
+            seg.classList.add('segment-empty');
+        }
+        progressBarContainer.appendChild(seg);
+    }
+
+    document.getElementById('progressText').innerText = `${progressStep}/${MAX_STEPS}`;
+
+    const currentDiff = getRequiredDifficulty();
+    if (currentDiff !== "Selesai") {
+        const diffSpan = document.getElementById('currentDiffText');
+        diffSpan.innerText = currentDiff;
+        diffSpan.style.color = diffConfig[currentDiff].color;
+    }
+}
+
+function finishExam() {
+    actionButtons.style.display = 'none';
+    generateBtn.style.display = 'none'; 
+    document.querySelectorAll('.cat-btn').forEach(b => b.disabled = true);
+    
+    const percentage = (correctCount / MAX_STEPS) * 100;
+    let finalGrade = "";
+    
+    if (percentage === 0) finalGrade = "E (0%)";
+    else if (percentage === 25) finalGrade = "D (25%)";
+    else if (percentage === 50) finalGrade = "C+ (50%)";
+    else if (percentage === 75) finalGrade = "B+ (75%)";
+    else if (percentage === 100) finalGrade = "A (100%)";
+
+    questionBox.className = 'question-box result-skip';
+    questionDisplay.innerHTML = `
+        <h2 style="margin: 0; color: #1b6308; font-size: 2rem;">🎉 UJIAN SELESAI 🎉</h2>
+        <h3 style="margin-top: 10px; color: #1368ce;">Mahasiswa: ${playerName.toUpperCase()}</h3>
+        <div style="font-size: 1.5rem; font-weight: 800; margin-top: 20px; margin-bottom: 25px; color: #333;">
+            GRADE AKHIR: <span style="color: var(--orange); font-size: 2.2rem;">${finalGrade}</span>
+        </div>
+        <!-- TOMBOL RESTART -->
+        <button id="btnRestart" class="kahoot-btn btn-play" style="width: auto; padding: 12px 30px; font-size: 1.1rem; margin: 0 auto; display: inline-block;">
+            🔄 Main Lagi!
+        </button>
+    `;
+    
+    // Fungsi me-refresh halaman untuk mahasiswa berikutnya
+    document.getElementById('btnRestart').addEventListener('click', () => {
+        location.reload(); 
+    });
+    
+    document.getElementById('currentDiffText').innerText = "Selesai";
+    document.getElementById('currentDiffText').style.color = "#864cbf";
+
+    fireConfetti();
+    soundVictory.currentTime = 0;
+    soundVictory.play();
+}
