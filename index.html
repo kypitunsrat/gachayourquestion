@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calon S.Kom UNSRAT</title>
+    <title>🎮 S.Kom Quest</title>
     <link rel="stylesheet" href="style.css">
     <!-- Font ceria ala Kahoot -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
@@ -12,17 +12,45 @@
 </head>
 <body>
 
+    <!-- POP-UP INPUT NAMA AWAL -->
+    <div class="popup-overlay" id="welcomeModal" style="display: flex;">
+        <div class="modal-content">
+            <h2 style="margin-top:0; color: #1368ce;">🎓 Selamat Datang Di Sidang Sarjana Teknik Informatika UNSRAT!</h2>
+            <p style="font-weight: 500;">Silakan masukkan nama lengkap mahasiswa:</p>
+            <input type="text" id="playerNameInput" class="name-input custom-placeholder" placeholder="Masukkan Nama Lengkap" autocomplete="off">
+            <button id="startBtn" class="kahoot-btn btn-play" style="margin-bottom: 0;">Mulai Ujian</button>
+        </div>
+    </div>
+
     <div class="app-container">
         <div class="top-bar">
-            <!-- Judul Aplikasi Khas UNSRAT -->
-            <div class="title-logo">🎓 Calon S.Kom UNSRAT</div>
+            <!-- KIRI: PROFIL & PROGRESS BAR -->
+            <div class="user-info">
+                <div class="user-name-container">
+                    <span class="user-label">Mahasiswa:</span> 
+                    <span id="userNameDisplay" class="user-name-value">-</span>
+                </div>
+                <div class="progress-wrapper">
+                    <div class="progress-bar-bg" id="progressBarContainer">
+                        <!-- Segmen progress akan diisi otomatis lewat JS -->
+                    </div>
+                    <div id="progressText" class="progress-text">0/4 (0%)</div>
+                </div>
+                <!-- KESULITAN SOAL SAAT INI -->
+                <div class="diff-indicator">
+                    Kesulitan Soal Saat ini : <span id="currentDiffText" style="color: #26890c;">Easy</span>
+                </div>
+            </div>
+
+            <!-- TENGAH: Judul Aplikasi (S.Kom Quest) -->
+            <div class="title-logo">🎮 S.Kom Quest</div>
+
+            <!-- KANAN: Statistik Keluar -->
             <div class="stat-badge">Soal Keluar: <span id="answeredCount">0</span></div>
         </div>
 
-        <!-- BUNGKUS BARU: MEMBAGI LAYAR KIRI DAN KANAN -->
         <div class="layout-wrapper">
-            
-            <!-- BAGIAN KIRI: AREA GACHA (Lebih Lebar) -->
+            <!-- BAGIAN KIRI: AREA GACHA -->
             <div class="gacha-section main-card">
                 <h2>Pilih Kategori Topik Ujian <span style="font-size: 1.1rem; font-weight: 500; color: #666;">(Bisa pilih lebih dari 1)</span></h2>
                 
@@ -30,15 +58,21 @@
                     <!-- Tombol kategori dirender dari JavaScript -->
                 </div>
 
-                <!-- Tombol Gacha dengan ikon dadu -->
-                <button id="generateBtn" class="kahoot-btn btn-play" disabled>Gacha Pertanyaan! 🎲</button>
+                <!-- Tombol Gacha -->
+                <button id="generateBtn" class="kahoot-btn btn-play" disabled>Pilih kategori ujian...</button>
+
+                <!-- TOMBOL BENAR / SALAH -->
+                <div id="actionButtons" class="action-buttons" style="display: none; margin-bottom: 30px;">
+                    <button id="btnBenar" class="action-btn btn-benar">✅ Jawab Benar</button>
+                    <button id="btnSalah" class="action-btn btn-salah">❌ Salah / Pas</button>
+                </div>
 
                 <div class="question-box">
                     <div class="question-text" id="questionDisplay">Silakan pilih kategori dan tekan tombol untuk memulai ujian!</div>
                 </div>
             </div>
 
-            <!-- BAGIAN KANAN: AREA HISTORY (Lebih Kecil, Punya Kotak Sendiri) -->
+            <!-- BAGIAN KANAN: AREA HISTORY -->
             <div class="history-section main-card">
                 <div class="history-title">📜 Riwayat Pertanyaan Keluar</div>
                 <div class="table-responsive">
@@ -57,11 +91,10 @@
                     </table>
                 </div>
             </div>
-
-        </div> <!-- Penutup layout-wrapper -->
+        </div>
     </div>
 
-    <!-- FITUR: POP-UP OVERLAY (Disembunyikan) -->
+    <!-- POP-UP OVERLAY JACKPOT -->
     <div class="popup-overlay" id="skipPopup">
         <h1 class="popup-title">🎉 JACKPOT! 🎉</h1>
         <h2 class="popup-subtitle">MAHASISWA DAPAT SKIP!</h2>
